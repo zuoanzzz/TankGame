@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1e8ce0fc-a66c-4b66-8a45-9d28f1f712bc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TankGame.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/learn/tankgame/GameArea.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/learn/tankgame/TankGame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/learn/tankgame/model/EnemyTank.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/learn/tankgame/model/FriendTank.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/learn/tankgame/model/Tank.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +19,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="7ca12e1f-faa2-428f-ab47-63ebaf69988f" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -38,14 +31,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Java学习/java入门/IDEA_project/TankGame&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Java学习/java入门/IDEA_project/TankGame",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="TankGame" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.learn.tankgame.TankGame" />
@@ -77,6 +71,7 @@
       <workItem from="1667215341122" duration="4019000" />
       <workItem from="1667222985934" duration="4017000" />
       <workItem from="1667228834369" duration="28000" />
+      <workItem from="1667283371005" duration="1307000" />
     </task>
     <servers />
   </component>
