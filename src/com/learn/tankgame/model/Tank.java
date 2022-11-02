@@ -49,19 +49,19 @@ public class Tank {
         this.y = y;
     }
 
-    public void moveUp(){
+    public void moveUp() {
         y -= speed;
     }
 
-    public void moveDown(){
+    public void moveDown() {
         y += speed;
     }
 
-    public void moveLeft(){
+    public void moveLeft() {
         x -= speed;
     }
 
-    public void moveRight(){
+    public void moveRight() {
         x += speed;
     }
 

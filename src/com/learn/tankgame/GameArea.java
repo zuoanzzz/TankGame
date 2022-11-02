@@ -1,5 +1,6 @@
 package com.learn.tankgame;
 
+import com.learn.tankgame.model.Bullet;
 import com.learn.tankgame.model.EnemyTank;
 import com.learn.tankgame.model.FriendTank;
 
@@ -14,12 +15,12 @@ import java.util.Vector;
  * @date 2022/10/31
  * game area
  */
-public class GameArea extends JPanel implements KeyListener {
+public class GameArea extends JPanel implements KeyListener ,Runnable{
     private FriendTank friendTank = null;
     private Vector<EnemyTank> enemyTanks;          //for threads safe
 
     public GameArea() {
-        friendTank = new FriendTank(100, 100, 0);
+        friendTank = new FriendTank(100, 100, 3);
         enemyTanks = new Vector<>();
         enemyTanks.add(new EnemyTank(200, 200, 0));
         enemyTanks.add(new EnemyTank(300, 300, 0));
@@ -31,6 +32,11 @@ public class GameArea extends JPanel implements KeyListener {
         super.paint(g);
         g.fillRect(0, 0, 1000, 750);
         drawTank(friendTank.getX(), friendTank.getY(), g, friendTank.getDirection(), 0);
+        for (Bullet bullet : friendTank.getBullets()) {
+            if(bullet.isAlive()){
+                g.draw3DRect(bullet.getX(),bullet.getY(),1,1,false);
+            }
+        }
         for (EnemyTank enemyTank : enemyTanks) {
             drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirection(), 1);
         }
@@ -55,32 +61,32 @@ public class GameArea extends JPanel implements KeyListener {
 
         switch (direction) {
             case 0:
-                g.fill3DRect(x, y, 10, 60, false);
-                g.fill3DRect(x + 10, y + 10, 20, 40, false);
-                g.fill3DRect(x + 30, y, 10, 60, false);
-                g.fillOval(x + 10, y + 20, 20, 20);
-                g.drawLine(x + 20, y + 30, x + 20, y);
+                g.fill3DRect(x - 20, y - 30, 10, 60, false);
+                g.fill3DRect(x - 10, y - 20, 20, 40, false);
+                g.fill3DRect(x + 10, y - 30, 10, 60, false);
+                g.fillOval(x - 10, y - 10, 20, 20);
+                g.drawLine(x, y, x, y - 30);
                 break;
             case 1:
-                g.fill3DRect(x, y, 10, 60, false);
-                g.fill3DRect(x + 10, y + 10, 20, 40, false);
-                g.fill3DRect(x + 30, y, 10, 60, false);
-                g.fillOval(x + 10, y + 20, 20, 20);
-                g.drawLine(x + 20, y + 30, x + 20, y + 60);
+                g.fill3DRect(x - 20, y - 30, 10, 60, false);
+                g.fill3DRect(x - 10, y - 20, 20, 40, false);
+                g.fill3DRect(x + 10, y - 30, 10, 60, false);
+                g.fillOval(x - 10, y - 10, 20, 20);
+                g.drawLine(x, y, x, y + 30);
                 break;
             case 2:
-                g.fill3DRect(x, y, 60, 10, false);
-                g.fill3DRect(x + 10, y + 10, 40, 20, false);
-                g.fill3DRect(x, y + 30, 60, 10, false);
-                g.fillOval(x + 20, y + 10, 20, 20);
-                g.drawLine(x, y + 20, x + 30, y + 20);
+                g.fill3DRect(x - 30, y - 20, 60, 10, false);
+                g.fill3DRect(x - 20, y - 10, 40, 20, false);
+                g.fill3DRect(x - 30, y + 10, 60, 10, false);
+                g.fillOval(x - 10, y - 10, 20, 20);
+                g.drawLine(x, y, x - 30, y);
                 break;
             case 3:
-                g.fill3DRect(x, y, 60, 10, false);
-                g.fill3DRect(x + 10, y + 10, 40, 20, false);
-                g.fill3DRect(x, y + 30, 60, 10, false);
-                g.fillOval(x + 20, y + 10, 20, 20);
-                g.drawLine(x + 30, y + 20, x + 60, y + 20);
+                g.fill3DRect(x - 30, y - 20, 60, 10, false);
+                g.fill3DRect(x - 20, y - 10, 40, 20, false);
+                g.fill3DRect(x - 30, y + 10, 60, 10, false);
+                g.fillOval(x - 10, y - 10, 20, 20);
+                g.drawLine(x, y, x + 30, y);
                 break;
         }
     }
@@ -109,6 +115,9 @@ public class GameArea extends JPanel implements KeyListener {
                 friendTank.setDirection(3);
                 friendTank.moveRight();
                 break;
+            case KeyEvent.VK_J:
+                friendTank.fire();
+                break;
         }
         this.repaint();
     }
@@ -116,5 +125,17 @@ public class GameArea extends JPanel implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    @Override
+    public void run() {
+        while (true){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            repaint();
+        }
     }
 }

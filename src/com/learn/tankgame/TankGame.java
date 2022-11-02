@@ -16,6 +16,7 @@ public class TankGame extends JFrame {
 
     public TankGame() {
         gameArea = new GameArea();
+        new Thread(gameArea).start();
         this.add(gameArea);
         this.addKeyListener(gameArea);
         this.setSize(1000, 750);
