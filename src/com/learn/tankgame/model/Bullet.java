@@ -59,7 +59,7 @@ public class Bullet implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (isAlive) {
             switch (direction) {
                 case 0:
                     y -= speed;

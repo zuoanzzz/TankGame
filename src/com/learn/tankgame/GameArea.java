@@ -1,13 +1,12 @@
 package com.learn.tankgame;
 
-import com.learn.tankgame.model.Bullet;
-import com.learn.tankgame.model.EnemyTank;
-import com.learn.tankgame.model.FriendTank;
+import com.learn.tankgame.model.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -15,31 +14,77 @@ import java.util.Vector;
  * @date 2022/10/31
  * game area
  */
-public class GameArea extends JPanel implements KeyListener ,Runnable{
+public class GameArea extends JPanel implements KeyListener, Runnable {
     private FriendTank friendTank = null;
     private Vector<EnemyTank> enemyTanks;          //for threads safe
+    private int enemyNum = 3;
+    private Vector<Bomb> bombs = new Vector<>();
+    private Image[] images = new Image[3];
 
     public GameArea() {
         friendTank = new FriendTank(100, 100, 3);
         enemyTanks = new Vector<>();
-        enemyTanks.add(new EnemyTank(200, 200, 0));
-        enemyTanks.add(new EnemyTank(300, 300, 0));
-        enemyTanks.add(new EnemyTank(400, 400, 0));
+        for (int i = 0; i < enemyNum; i++) {
+            enemyTanks.add(new EnemyTank((i + 2) * 100, (i + 2) * 100, 0));
+            enemyTanks.get(i).fire();
+            new Thread(enemyTanks.get(i)).start();
+        }
+        images[0] = Toolkit.getDefaultToolkit().getImage(GameArea.class.getResource("/bomb1.png"));  //获取图像
+        images[1] = Toolkit.getDefaultToolkit().getImage(GameArea.class.getResource("/bomb2.png"));  //获取图像
+        images[2] = Toolkit.getDefaultToolkit().getImage(GameArea.class.getResource("/bomb3.png"));  //获取图像
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         g.fillRect(0, 0, 1000, 750);
-        drawTank(friendTank.getX(), friendTank.getY(), g, friendTank.getDirection(), 0);
-        for (Bullet bullet : friendTank.getBullets()) {
-            if(bullet.isAlive()){
-                g.draw3DRect(bullet.getX(),bullet.getY(),1,1,false);
+
+        if (friendTank.isAlive()) {
+            drawTank(friendTank.getX(), friendTank.getY(), g, friendTank.getDirection(), 0);
+        }
+
+        Iterator<Bullet> bulletIterator = friendTank.getBullets().iterator();
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+            if (bullet.isAlive()) {
+                g.draw3DRect(bullet.getX(), bullet.getY(), 1, 1, false);
+                for (int i = 0; i < enemyTanks.size(); i++) {
+                    if (hitTank(enemyTanks.get(i), bullet))
+                        break;
+                }
+            } else {
+                bulletIterator.remove();
             }
         }
-        for (EnemyTank enemyTank : enemyTanks) {
-            drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirection(), 1);
+
+        Iterator<Bomb> bombIterator = bombs.iterator();
+        while (bombIterator.hasNext()) {
+            Bomb bomb =  bombIterator.next();
+            if (bomb.isAlive()) {
+                if(bomb.getLifeTime()>6){
+                    g.drawImage(images[0],bomb.getX()-30,bomb.getY()-30,60,60,this);
+                }else if (bomb.getLifeTime()>3){
+                    g.drawImage(images[1],bomb.getX()-30,bomb.getY()-30,60,60,this);
+                }else if (bomb.getLifeTime()>0){
+                    g.drawImage(images[2],bomb.getX()-30,bomb.getY()-30,60,60,this);
+                }
+            }else {
+                bombIterator.remove();
+            }
         }
+
+        for (EnemyTank enemyTank : enemyTanks) {
+            if (enemyTank.isAlive()) {
+                drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirection(), 1);
+                move(enemyTank.getDirection(), enemyTank);
+                for (Bullet bullet : enemyTank.getBullets()) {
+                    if (bullet.isAlive())
+                        g.draw3DRect(bullet.getX(), bullet.getY(), 1, 1, false);
+                    hitPlayer(bullet);
+                }
+            }
+        }
+
     }
 
     /**
@@ -91,6 +136,66 @@ public class GameArea extends JPanel implements KeyListener ,Runnable{
         }
     }
 
+    public void hitPlayer(Bullet bullet){
+        if (friendTank.isAlive()) {
+            int x = bullet.getX();
+            int y = bullet.getY();
+            switch (friendTank.getDirection()) {
+                case 0:
+                case 1:
+                    if ((x > (friendTank.getX() - 20)) && (x < (friendTank.getX() + 20))
+                            && (y > (friendTank.getY() - 30)) && (y < (friendTank.getY() + 30))) {
+                        bullet.setAlive(false);
+                        friendTank.setAlive(false);
+                        Bomb bomb = new Bomb(friendTank.getX(), friendTank.getY());
+                        bombs.add(bomb);
+                    }
+                    break;
+                case 2:
+                case 3:
+                    if ((x > (friendTank.getX() - 30)) && (x < (friendTank.getX() + 30))
+                            && (y > (friendTank.getY() - 20)) && (y < (friendTank.getY() + 20))) {
+                        bullet.setAlive(false);
+                        friendTank.setAlive(false);
+                        Bomb bomb = new Bomb(friendTank.getX(), friendTank.getY());
+                        bombs.add(bomb);
+                    }
+                    break;
+            }
+        }
+    }
+    public boolean hitTank(EnemyTank enemyTank, Bullet bullet) {
+        int x = bullet.getX();
+        int y = bullet.getY();
+        switch (enemyTank.getDirection()) {
+            case 0:
+            case 1:
+                if ((x > (enemyTank.getX() - 20)) && (x < (enemyTank.getX() + 20))
+                        && (y > (enemyTank.getY() - 30)) && (y < (enemyTank.getY() + 30))) {
+                    bullet.setAlive(false);
+                    enemyTank.setAlive(false);
+                    enemyTanks.remove(enemyTank);
+                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    bombs.add(bomb);
+                    return true;
+                }
+                return false;
+            case 2:
+            case 3:
+                if ((x > (enemyTank.getX() - 30)) && (x < (enemyTank.getX() + 30))
+                        && (y > (enemyTank.getY() - 20)) && (y < (enemyTank.getY() + 20))) {
+                    bullet.setAlive(false);
+                    enemyTank.setAlive(false);
+                    enemyTanks.remove(enemyTank);
+                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    bombs.add(bomb);
+                    return true;
+                }
+                return false;
+        }
+        return false;
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -98,28 +203,29 @@ public class GameArea extends JPanel implements KeyListener ,Runnable{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_W:
-                friendTank.setDirection(0);
-                friendTank.moveUp();
-                break;
-            case KeyEvent.VK_S:
-                friendTank.setDirection(1);
-                friendTank.moveDown();
-                break;
-            case KeyEvent.VK_A:
-                friendTank.setDirection(2);
-                friendTank.moveLeft();
-                break;
-            case KeyEvent.VK_D:
-                friendTank.setDirection(3);
-                friendTank.moveRight();
-                break;
-            case KeyEvent.VK_J:
-                friendTank.fire();
-                break;
+        if (friendTank.isAlive()) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_W:
+                    friendTank.setDirection(0);
+                    move(friendTank.getDirection(), friendTank);
+                    break;
+                case KeyEvent.VK_S:
+                    friendTank.setDirection(1);
+                    move(friendTank.getDirection(), friendTank);
+                    break;
+                case KeyEvent.VK_A:
+                    friendTank.setDirection(2);
+                    move(friendTank.getDirection(), friendTank);
+                    break;
+                case KeyEvent.VK_D:
+                    friendTank.setDirection(3);
+                    move(friendTank.getDirection(), friendTank);
+                    break;
+                case KeyEvent.VK_J:
+                    friendTank.fire();
+                    break;
+            }
         }
-        this.repaint();
     }
 
     @Override
@@ -127,14 +233,42 @@ public class GameArea extends JPanel implements KeyListener ,Runnable{
 
     }
 
+    public void move(int direction, Tank tank) {
+        switch (direction) {
+            case 0:
+                tank.moveUp();
+                break;
+            case 1:
+                tank.moveDown();
+                break;
+            case 2:
+                tank.moveLeft();
+                break;
+            case 3:
+                tank.moveRight();
+                break;
+        }
+    }
+
     @Override
     public void run() {
-        while (true){
+        while (true) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+
+            Iterator<Bomb> bombIterator = bombs.iterator();
+            while (bombIterator.hasNext()) {
+                Bomb bomb =  bombIterator.next();
+                if (bomb.isAlive()) {
+                    bomb.lifeMinus();
+                }else {
+                    bombIterator.remove();
+                }
+            }
+
             repaint();
         }
     }
