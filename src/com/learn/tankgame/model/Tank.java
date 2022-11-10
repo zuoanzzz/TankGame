@@ -1,7 +1,6 @@
 package com.learn.tankgame.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
@@ -9,7 +8,7 @@ import java.util.Vector;
  * @date 2022/10/31
  * all tanks father
  */
-public class Tank {
+public class Tank implements Serializable {
     private int x;
     private int y;
     private int direction;

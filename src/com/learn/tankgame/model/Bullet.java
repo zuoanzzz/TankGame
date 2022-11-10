@@ -1,10 +1,12 @@
 package com.learn.tankgame.model;
 
+import java.io.Serializable;
+
 /**
  * @author zhoulei
  * @date 2022/11/2
  */
-public class Bullet implements Runnable {
+public class Bullet implements Runnable, Serializable {
     private int x;
     private int y;
     private int direction;

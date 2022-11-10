@@ -6,7 +6,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
 import java.util.Vector;
 
 /**
@@ -21,17 +24,36 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
     private Vector<Bomb> bombs = new Vector<>();
     private Image[] images = new Image[3];
 
-    public GameArea() {
-        friendTank = new FriendTank(100, 100, 3);
-        enemyTanks = new Vector<>();
-        for (int i = 0; i < enemyNum; i++) {
-            enemyTanks.add(new EnemyTank((i + 2) * 100, (i + 2) * 100, 0));
-            enemyTanks.get(i).fire();
-            new Thread(enemyTanks.get(i)).start();
+    public FriendTank getFriendTank() {
+        return friendTank;
+    }
+
+    public Vector<EnemyTank> getEnemyTanks() {
+        return enemyTanks;
+    }
+
+    public GameArea() throws IOException, ClassNotFoundException {
+        System.out.println("1:新游戏;2:上局游戏");
+        String choice = new Scanner(System.in).next();
+        if (choice.equals("2")) {
+            List list = Record.loadGame();
+            friendTank = (FriendTank) list.get(0);
+            enemyTanks = (Vector<EnemyTank>) list.get(1);
+        }else {
+            friendTank = new FriendTank(100, 100, 3);
+            enemyTanks = new Vector<>();
+            for (int i = 0; i < enemyNum; i++) {
+                enemyTanks.add(new EnemyTank((i + 2) * 100, (i + 2) * 100, 0));
+            }
+        }
+        friendTank.getBullets().clear();
+        for (EnemyTank enemyTank : enemyTanks) {
+            enemyTank.getBullets().clear();
+            new Thread(enemyTank).start();
         }
         images[0] = Toolkit.getDefaultToolkit().getImage(GameArea.class.getResource("/bomb1.png"));  //获取图像
-        images[1] = Toolkit.getDefaultToolkit().getImage(GameArea.class.getResource("/bomb2.png"));  //获取图像
-        images[2] = Toolkit.getDefaultToolkit().getImage(GameArea.class.getResource("/bomb3.png"));  //获取图像
+        images[1] = Toolkit.getDefaultToolkit().getImage(GameArea.class.getResource("/bomb2.png"));
+        images[2] = Toolkit.getDefaultToolkit().getImage(GameArea.class.getResource("/bomb3.png"));
     }
 
     @Override
@@ -59,16 +81,16 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
 
         Iterator<Bomb> bombIterator = bombs.iterator();
         while (bombIterator.hasNext()) {
-            Bomb bomb =  bombIterator.next();
+            Bomb bomb = bombIterator.next();
             if (bomb.isAlive()) {
-                if(bomb.getLifeTime()>6){
-                    g.drawImage(images[0],bomb.getX()-30,bomb.getY()-30,60,60,this);
-                }else if (bomb.getLifeTime()>3){
-                    g.drawImage(images[1],bomb.getX()-30,bomb.getY()-30,60,60,this);
-                }else if (bomb.getLifeTime()>0){
-                    g.drawImage(images[2],bomb.getX()-30,bomb.getY()-30,60,60,this);
+                if (bomb.getLifeTime() > 6) {
+                    g.drawImage(images[0], bomb.getX() - 30, bomb.getY() - 30, 60, 60, this);
+                } else if (bomb.getLifeTime() > 3) {
+                    g.drawImage(images[1], bomb.getX() - 30, bomb.getY() - 30, 60, 60, this);
+                } else if (bomb.getLifeTime() > 0) {
+                    g.drawImage(images[2], bomb.getX() - 30, bomb.getY() - 30, 60, 60, this);
                 }
-            }else {
+            } else {
                 bombIterator.remove();
             }
         }
@@ -76,7 +98,8 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
         for (EnemyTank enemyTank : enemyTanks) {
             if (enemyTank.isAlive()) {
                 drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirection(), 1);
-                move(enemyTank.getDirection(), enemyTank);
+                if (enemyTank.isMove())
+                    move(enemyTank.getDirection(), enemyTank);
                 for (Bullet bullet : enemyTank.getBullets()) {
                     if (bullet.isAlive())
                         g.draw3DRect(bullet.getX(), bullet.getY(), 1, 1, false);
@@ -84,6 +107,8 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
                 }
             }
         }
+
+        showInfo(g);
 
     }
 
@@ -136,7 +161,7 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
         }
     }
 
-    public void hitPlayer(Bullet bullet){
+    public void hitPlayer(Bullet bullet) {
         if (friendTank.isAlive()) {
             int x = bullet.getX();
             int y = bullet.getY();
@@ -164,6 +189,7 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
             }
         }
     }
+
     public boolean hitTank(EnemyTank enemyTank, Bullet bullet) {
         int x = bullet.getX();
         int y = bullet.getY();
@@ -177,6 +203,7 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
                     enemyTanks.remove(enemyTank);
                     Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
                     bombs.add(bomb);
+                    Record.addScore();
                     return true;
                 }
                 return false;
@@ -189,6 +216,7 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
                     enemyTanks.remove(enemyTank);
                     Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
                     bombs.add(bomb);
+                    Record.addScore();
                     return true;
                 }
                 return false;
@@ -204,22 +232,51 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
     @Override
     public void keyPressed(KeyEvent e) {
         if (friendTank.isAlive()) {
+            boolean move = true;
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_W:
                     friendTank.setDirection(0);
-                    move(friendTank.getDirection(), friendTank);
+                    for (EnemyTank enemyTank : enemyTanks) {
+                        if (collide(friendTank, enemyTank)) {
+                            move = false;
+                            break;
+                        }
+                    }
+                    if (move)
+                        move(friendTank.getDirection(), friendTank);
                     break;
                 case KeyEvent.VK_S:
                     friendTank.setDirection(1);
-                    move(friendTank.getDirection(), friendTank);
+                    for (EnemyTank enemyTank : enemyTanks) {
+                        if (collide(friendTank, enemyTank)) {
+                            move = false;
+                            break;
+                        }
+                    }
+                    if (move)
+                        move(friendTank.getDirection(), friendTank);
                     break;
                 case KeyEvent.VK_A:
                     friendTank.setDirection(2);
-                    move(friendTank.getDirection(), friendTank);
+                    for (EnemyTank enemyTank : enemyTanks) {
+                        if (collide(friendTank, enemyTank)) {
+                            move = false;
+                            break;
+                        }
+                    }
+                    if (move)
+                        move(friendTank.getDirection(), friendTank);
                     break;
                 case KeyEvent.VK_D:
                     friendTank.setDirection(3);
-                    move(friendTank.getDirection(), friendTank);
+                    for (EnemyTank enemyTank : enemyTanks) {
+                        if (collide(friendTank, enemyTank)) {
+                            move = false;
+                            break;
+                        }
+                    }
+                    if (move)
+                        move(friendTank.getDirection(), friendTank);
                     break;
                 case KeyEvent.VK_J:
                     friendTank.fire();
@@ -250,6 +307,75 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
         }
     }
 
+
+    //以点为参考
+    public boolean collide(Tank tank0, Tank tank1) {
+        int x0 = tank0.getX();
+        int y0 = tank0.getY();
+        int x1 = tank1.getX();
+        int y1 = tank1.getY();
+        switch (tank0.getDirection()) {
+            case 0:
+                switch (tank1.getDirection()) {
+                    case 0:
+                    case 1:
+                        return (((x0 + 20) > (x1 - 20)) && ((x0 + 20) < (x1 + 20)) && ((y0 - 30) > (y1 - 30)) && ((y0 - 30) < (y1 + 30)))
+                                || (((x0 - 20) > (x1 - 20)) && ((x0 - 20) < (x1 + 20)) && ((y0 - 30) > (y1 - 30)) && ((y0 - 30) < (y1 + 30)));
+                    case 2:
+                    case 3:
+                        return (((x0 + 20) > (x1 - 30)) && ((x0 + 20) < (x1 + 30)) && ((y0 - 30) > (y1 - 20)) && ((y0 - 30) < (y1 + 20)))
+                                || (((x0 - 20) > (x1 - 30)) && ((x0 - 20) < (x1 + 30)) && ((y0 - 30) > (y1 - 20)) && ((y0 - 30) < (y1 + 20)));
+                }
+                break;
+            case 1:
+                switch (tank1.getDirection()) {
+                    case 0:
+                    case 1:
+                        return (((x0 + 20) > (x1 - 20)) && ((x0 + 20) < (x1 + 20)) && ((y0 + 30) > (y1 - 30)) && ((y0 + 30) < (y1 + 30)))
+                                || (((x0 - 20) > (x1 - 20)) && ((x0 - 20) < (x1 + 20)) && ((y0 + 30) > (y1 - 30)) && ((y0 + 30) < (y1 + 30)));
+                    case 2:
+                    case 3:
+                        return (((x0 + 20) > (x1 - 30)) && ((x0 + 20) < (x1 + 30)) && ((y0 + 30) > (y1 - 20)) && ((y0 + 30) < (y1 + 20)))
+                                || (((x0 - 20) > (x1 - 30)) && ((x0 - 20) < (x1 + 30)) && ((y0 + 30) > (y1 - 20)) && ((y0 + 30) < (y1 + 20)));
+                }
+                break;
+            case 2:
+                switch (tank1.getDirection()) {
+                    case 0:
+                    case 1:
+                        return (((y0 - 20) > (y1 - 30)) && ((y0 - 20) < (y1 + 30)) && ((x0 - 30) > (x1 - 20)) && ((x0 - 30) < (x1 + 20)))
+                                || (((y0 + 20) > (y1 - 30)) && ((y0 + 20) < (y1 + 30)) && ((x0 - 30) > (x1 - 20)) && ((x0 - 30) < (x1 + 20)));
+                    case 2:
+                    case 3:
+                        return (((y0 - 20) > (y1 - 20)) && ((y0 - 20) < (y1 + 20)) && ((x0 - 30) > (x1 - 30)) && ((x0 - 30) < (x1 + 30)))
+                                || (((y0 + 20) > (y1 - 20)) && ((y0 + 20) < (y1 + 20)) && ((x0 - 30) > (x1 - 30)) && ((x0 - 30) < (x1 + 30)));
+                }
+                break;
+            case 3:
+                switch (tank1.getDirection()) {
+                    case 0:
+                    case 1:
+                        return (((y0 - 20) > (y1 - 30)) && ((y0 - 20) < (y1 + 30)) && ((x0 + 30) > (x1 - 20)) && ((x0 + 30) < (x1 + 20)))
+                                || (((y0 + 20) > (y1 - 30)) && ((y0 + 20) < (y1 + 30)) && ((x0 + 30) > (x1 - 20)) && ((x0 + 30) < (x1 + 20)));
+                    case 2:
+                    case 3:
+                        return (((y0 - 20) > (y1 - 20)) && ((y0 - 20) < (y1 + 20)) && ((x0 + 30) > (x1 - 30)) && ((x0 + 30) < (x1 + 30)))
+                                || (((y0 + 20) > (y1 - 20)) && ((y0 + 20) < (y1 + 20)) && ((x0 + 30) > (x1 - 30)) && ((x0 + 30) < (x1 + 30)));
+                }
+                break;
+        }
+        return false;
+    }
+
+    public void showInfo(Graphics g) {
+        g.setColor(Color.black);
+        g.setFont(new Font("宋体", Font.BOLD, 25));
+        g.drawString("击毁敌方坦克：", 1000, 30);
+        drawTank(1040, 80, g, 0, 1);
+        g.setColor(Color.black);
+        g.drawString(Integer.toString(Record.getScore()), 1100, 90);
+    }
+
     @Override
     public void run() {
         while (true) {
@@ -261,11 +387,28 @@ public class GameArea extends JPanel implements KeyListener, Runnable {
 
             Iterator<Bomb> bombIterator = bombs.iterator();
             while (bombIterator.hasNext()) {
-                Bomb bomb =  bombIterator.next();
+                Bomb bomb = bombIterator.next();
                 if (bomb.isAlive()) {
                     bomb.lifeMinus();
-                }else {
+                } else {
                     bombIterator.remove();
+                }
+            }
+
+            for (int i = 0; i < enemyTanks.size(); i++) {
+                for (int j = 0; j < enemyTanks.size(); j++) {
+                    if (j != i) {
+                        if (collide(enemyTanks.get(i), enemyTanks.get(j))) {
+                            enemyTanks.get(i).setMove(false);
+                            break;
+                        } else
+                            enemyTanks.get(i).setMove(true);
+                    }
+                }
+                if (enemyTanks.get(i).isMove()) {
+                    if (collide(enemyTanks.get(i), friendTank)) {
+                        enemyTanks.get(i).setMove(false);
+                    }
                 }
             }
 

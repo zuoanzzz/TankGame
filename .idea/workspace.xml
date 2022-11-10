@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1e8ce0fc-a66c-4b66-8a45-9d28f1f712bc" name="Changes" comment="fire">
-      <change afterPath="$PROJECT_DIR$/src/com/learn/tankgame/model/Bomb.java" afterDir="false" />
+    <list default="true" id="1e8ce0fc-a66c-4b66-8a45-9d28f1f712bc" name="Changes" comment="vision-2">
+      <change afterPath="$PROJECT_DIR$/src/com/learn/tankgame/Record.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/learn/tankgame/music.mp3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/learn/tankgame/GameArea.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/learn/tankgame/GameArea.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/learn/tankgame/TankGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/learn/tankgame/TankGame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/learn/tankgame/model/Bullet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/learn/tankgame/model/Bullet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/learn/tankgame/model/EnemyTank.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/learn/tankgame/model/EnemyTank.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/learn/tankgame/model/FriendTank.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/learn/tankgame/model/FriendTank.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/learn/tankgame/model/Tank.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/learn/tankgame/model/Tank.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,20 +38,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Notification.DisplayName-DoNotAsk-Language Plugins Notifications&quot;: &quot;Recommended language plugin available&quot;,
-    &quot;Notification.DoNotAsk-Language Plugins Notifications&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Java学习/java入门/IDEA_project/TankGame/out/production/TankGame&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Notification.DisplayName-DoNotAsk-Language Plugins Notifications": "Recommended language plugin available",
+    "Notification.DoNotAsk-Language Plugins Notifications": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Java学习/java入门/IDEA_project/TankGame/src/com/learn/tankgame",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Java"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Java学习\java入门\IDEA_project\TankGame\src\com\learn\tankgame" />
       <recent name="C:\Java学习\java入门\IDEA_project\TankGame\out\production\TankGame" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -94,7 +96,12 @@
       <workItem from="1667395460135" duration="6412000" />
       <workItem from="1667442655600" duration="180000" />
       <workItem from="1667458123585" duration="16729000" />
-      <workItem from="1667478458065" duration="1621000" />
+      <workItem from="1667478458065" duration="2532000" />
+      <workItem from="1667526363560" duration="108000" />
+      <workItem from="1667529457922" duration="53000" />
+      <workItem from="1667799376442" duration="10155000" />
+      <workItem from="1667902647565" duration="4065000" />
+      <workItem from="1668076517255" duration="4614000" />
     </task>
     <task id="LOCAL-00001" summary="version-1">
       <created>1667284755717</created>
@@ -110,7 +117,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667400123399</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="vision-2">
+      <created>1667480208727</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1667480208727</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -130,6 +144,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="version-1" />
     <MESSAGE value="fire" />
-    <option name="LAST_COMMIT_MESSAGE" value="fire" />
+    <MESSAGE value="vision-2" />
+    <option name="LAST_COMMIT_MESSAGE" value="vision-2" />
   </component>
 </project>
